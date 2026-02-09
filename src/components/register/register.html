@@ -1,1 +1,38 @@
-<p>register works!</p>
+<div class="container">
+  <div class="pb-3 align-items-center justify-content-center d-flex">
+    <!-- <div class="card">
+    <div class="card-body align-items-center justify-content-center"> -->
+    <form [formGroup]="registerForm">
+      <div class="form-group mb-3">
+        <label for="email" class="fw-semibold">Email</label>
+        <input type="text" class="form-control" formControlName="email" id="email" />
+      </div>
+      <div class="form-group mb-3">
+        <label for="username" class="fw-semibold">Username</label>
+        <input type="text" class="form-control" id="username" />
+      </div>
+      <div class="form-group mb-3">
+        <label for="password" class="fw-semibold">Password</label>
+        <input type="text" class="form-control" formControlName="password" id="password" />
+      </div>
+      <div class="form-group mb-3">
+        <label for="confirm_password" class="fw-semibold">Password</label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="confirm_password"
+          id="confirm_password"
+        />
+      </div>
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="validateForm()"
+        (submit)="validateForm()"
+      >
+        Register
+      </button>
+    </form>
+  </div>
+</div>
+<!-- </div>  -->
