@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -7,16 +7,20 @@ import { Observable } from 'rxjs';
 })
 export class AuthService {
   private base_url = 'http://localhost:3001/auth';
-  acessToken:any;
-  constructor(private http:HttpClient){}
-   register(payload:any):Observable<any>{
+  acessToken: any;
+  constructor(private http: HttpClient) { }
+  register(payload: any): Observable<any> {
     const fullUrl = `${this.base_url}/register`;
-    return this.http.post(fullUrl,payload)
+    return this.http.post(fullUrl, payload)
   }
-getAccessToken(){
-this.acessToken =sessionStorage.getItem('token');
-if(this.acessToken){
-  return this.acessToken;
-}
+  getAccessToken() {
+    this.acessToken = sessionStorage.getItem('token');
+    if (this.acessToken) {
+      return this.acessToken;
+    }
+  }
+  findUser(userId: number): Observable<any> {
+    const baseUrl = `http://localhost:3001/users/${userId}`;
+    return this.http.get<any>(baseUrl);
   }
 }
