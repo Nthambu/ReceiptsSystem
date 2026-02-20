@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { AuthService } from '../../app/auth-service';
-import { Router} from '@angular/router';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../auth-service';
+import { MessagingService } from '../../services/message-service';
 
 
 @Component({
@@ -13,29 +14,30 @@ import { CommonModule } from '@angular/common';
 })
 export class Register {
   registerForm!: FormGroup;
-  emailPattern:RegExp=/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  emailPattern: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router:Router
-  ) {}
+    private router: Router,
+    private messageService: MessagingService
+  ) { }
   ngOnInit() {
     this.initializeRegisterForm();
   }
   initializeRegisterForm(): void {
     this.registerForm = this.fb.group({
-      email: ['', [Validators.required,Validators.pattern(this.emailPattern)]],
+      email: ['', [Validators.required, Validators.pattern(this.emailPattern)]],
       username: ['', Validators.required],
       password: ['', Validators.required],
       confirm_password: ['', Validators.required],
     },
-  {
-    validators:this.passwordMatchValidator()
-  });
+      {
+        validators: this.passwordMatchValidator()
+      });
   }
   validateForm(): void {
     this.registerForm.markAllAsTouched();
-    if(this.registerForm.invalid){
+    if (this.registerForm.invalid) {
       return;
     }
     this.submitForm();
@@ -49,30 +51,34 @@ export class Register {
     };
     this.authService.register(payload).subscribe({
       next: (response) => {
-        alert('sucess');
-        if(response?.token){
-          sessionStorage.setItem('token',response.token);
-          
+       // this.messageService.handleSuccess(response.msg)
+        if (response?.token) {
+          sessionStorage.setItem('token', response.token);
         }
+        console.log(sessionStorage.getItem('token'));
+         this.router.navigate(['/home']);
       },
       error: (err) => {
-        alert('failed');
+        this.messageService.handleError(err);
       },
     });
   }
-  passwordMatchValidator():ValidatorFn{
-    return (form: AbstractControl): ValidationErrors | null =>{
-      const password=form.get('password')?.value;
-      const confirmPassword =form.get('confirm_password')?.value;
-      if(!password || !confirmPassword){
+  passwordMatchValidator(): ValidatorFn {
+    return (form: AbstractControl): ValidationErrors | null => {
+      const password = form.get('password')?.value;
+      const confirmPassword = form.get('confirm_password')?.value;
+      if (!password || !confirmPassword) {
         return null;
-        
+
       }
-      return password === confirmPassword?null:{passwordMismatch:true}
+      return password === confirmPassword ? null : { passwordMismatch: true }
     };
 
   }
-  navigateToLogin():void{
+  navigateToLogin(): void {
     this.router.navigate(['onsignIn']);
+  }
+  getUserDetails() {
+
   }
 }
