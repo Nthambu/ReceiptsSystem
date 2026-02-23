@@ -1,25 +1,28 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { AuthService } from '../../auth-service';
 import { MessagingService } from '../../services/message-service';
-
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, MatSlideToggleModule],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
 export class Register {
   registerForm!: FormGroup;
   emailPattern: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  private snackBar = inject(MatSnackBar)
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private messageService: MessagingService
+    private messageService: MessagingService,
+  
   ) { }
   ngOnInit() {
     this.initializeRegisterForm();
@@ -42,6 +45,9 @@ export class Register {
     }
     this.submitForm();
   }
+  openSnackBar(message: string, action: string) {
+    this.snackBar.open(message, action);
+  }
   submitForm(): void {
     const formValues = this.registerForm.value;
     const payload = {
@@ -51,12 +57,12 @@ export class Register {
     };
     this.authService.register(payload).subscribe({
       next: (response) => {
-       // this.messageService.handleSuccess(response.msg)
+        // this.messageService.handleSuccess(response.msg)
         if (response?.token) {
           sessionStorage.setItem('token', response.token);
         }
         console.log(sessionStorage.getItem('token'));
-         this.router.navigate(['/home']);
+        this.router.navigate(['/home']);
       },
       error: (err) => {
         this.messageService.handleError(err);
